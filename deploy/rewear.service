@@ -1,0 +1,25 @@
+[Unit]
+Description=ReWear Next.js application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/ReWear
+Environment=HOME=/home/ubuntu
+Environment=NODE_ENV=production
+Environment=NEXT_TELEMETRY_DISABLED=1
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3000
+ExecStartPre=/usr/bin/test -f /home/ubuntu/ReWear/.next/BUILD_ID
+ExecStart=/bin/bash /home/ubuntu/ReWear/scripts/start-production.sh
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

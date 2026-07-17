@@ -206,6 +206,10 @@ npm run start
 
 `npm run start` serve la build su `http://localhost:3000` salvo configurazioni della piattaforma di deploy.
 
+## Deploy automatico sulla VPS
+
+Il repository include una pipeline GitHub Actions che verifica e pubblica automaticamente ogni push sulla branch `main`. La configurazione iniziale completa della VPS, del servizio permanente e delle GitHub Secrets è in [deploy/README.md](deploy/README.md).
+
 ## Verifica manuale essenziale
 
 1. Registra due account e conferma l'email.

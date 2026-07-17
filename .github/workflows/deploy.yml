@@ -1,0 +1,109 @@
+name: Verify and deploy ReWear
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: rewear-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deployment-configuration:
+    name: Check deployment configuration
+    runs-on: ubuntu-24.04
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          DEPLOY_HOST: ${{ secrets.VPS_HOST }}
+          DEPLOY_USER: ${{ secrets.VPS_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          if [[ -n "$DEPLOY_HOST" && -n "$DEPLOY_USER" && -n "$DEPLOY_SSH_KEY" && -n "$VPS_KNOWN_HOSTS" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Deployment skipped: add VPS_HOST, VPS_USER, VPS_SSH_KEY and VPS_KNOWN_HOSTS as repository secrets, then run this workflow again."
+
+  quality:
+    name: Type-check and build
+    runs-on: ubuntu-24.04
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install pnpm
+        run: npm install --global pnpm@11.9.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check TypeScript
+        run: pnpm run typecheck
+
+      - name: Build the application
+        run: pnpm run build
+
+  deploy:
+    name: Deploy to production VPS
+    needs:
+      - deployment-configuration
+      - quality
+    if: needs.deployment-configuration.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+    env:
+      APP_DIR: /home/ubuntu/ReWear
+      DEPLOY_HOST: ${{ secrets.VPS_HOST }}
+      DEPLOY_USER: ${{ secrets.VPS_USER }}
+      DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          chmod 644 "$HOME/.ssh/known_hosts"
+
+      - name: Synchronize the release files
+        run: |
+          SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          $SSH_COMMAND "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$APP_DIR'"
+          rsync -az --delete-delay \
+            --exclude='.env.local' \
+            --exclude='.env' \
+            --exclude='.next/' \
+            --exclude='node_modules/' \
+            --exclude='.git/' \
+            --exclude='*.log' \
+            -e "$SSH_COMMAND" \
+            ./ "$DEPLOY_USER@$DEPLOY_HOST:$APP_DIR/"
+
+      - name: Install, build and restart on the VPS
+        run: |
+          ssh -i "$HOME/.ssh/id_ed25519" \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_DIR='$APP_DIR' bash -s" < scripts/deploy-on-vps.sh
