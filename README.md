@@ -1,6 +1,6 @@
-# ReWear
+# Wearware
 
-ReWear è un marketplace peer-to-peer per abbigliamento second-hand, realizzato con Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Supabase e Stripe.
+Wearware è un marketplace peer-to-peer per abbigliamento second-hand, realizzato con Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Supabase e Stripe.
 
 ## Architettura
 
@@ -220,5 +220,5 @@ Il repository include una pipeline GitHub Actions che verifica e pubblica automa
 ## Note di sicurezza
 
 - Le modifiche di stato dell'ordine sono eseguite da codice server con service role dopo autenticazione o da webhook Stripe verificato.
-- Il browser può caricare solo nel proprio prefisso `storage.objects`; la Server Action accetta soltanto URL pubblici del bucket ReWear.
+- Il browser può caricare solo nel proprio prefisso `storage.objects`; la Server Action accetta soltanto URL pubblici del bucket Wearware.
 - Per un lancio pubblico aggiungi rate limiting, osservabilità, flusso di spedizione/rimborso, moderazione annunci, privacy policy e revisione legale.

@@ -48,7 +48,7 @@ nano .env.local
 
 Inserisci nella copia locale le chiavi reali di Supabase. In particolare, `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` sono necessari per registrazione e login; l'assenza o un valore fittizio provoca `Failed to fetch` nel browser.
 
-Installa il servizio permanente. Questo mantiene l'app attiva su `127.0.0.1:3000`, quindi continua a funzionare con il tunnel SSH già usato dal PC:
+Installa il servizio permanente. L'app resta privata su `127.0.0.1:3000`; Nginx riceve il traffico pubblico sulle porte HTTP e HTTPS:
 
 ```bash
 cd ~/ReWear
@@ -57,6 +57,31 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now rewear
 sudo systemctl status rewear --no-pager
 curl -I http://127.0.0.1:3000
+```
+
+## 3. Dominio Wearware, Nginx e HTTPS
+
+Nel gestore DNS di `wearware.it`, crea i record `A` per `@` e `www` verso `51.255.167.28`. Rimuovi eventuali record `AAAA` che non puntino alla VPS.
+
+```bash
+sudo apt update
+sudo apt install -y nginx
+sudo install -D -m 644 ~/ReWear/deploy/wearware.it.nginx.conf /etc/nginx/sites-available/wearware.it
+sudo ln -sfn /etc/nginx/sites-available/wearware.it /etc/nginx/sites-enabled/wearware.it
+sudo nginx -t
+sudo systemctl enable --now nginx
+sudo systemctl reload nginx
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+```
+
+Dopo la propagazione dei DNS, crea il certificato HTTPS:
+
+```bash
+sudo snap install --classic certbot
+sudo ln -sfn /snap/bin/certbot /usr/local/bin/certbot
+sudo certbot --nginx -d wearware.it -d www.wearware.it
+sudo certbot renew --dry-run
 ```
 
 Consenti al solo utente `ubuntu` di riavviare e controllare il servizio senza password: GitHub Actions potrà eseguire esclusivamente questi due comandi con `sudo`.
@@ -71,7 +96,7 @@ sudo visudo -cf /etc/sudoers.d/rewear-github-actions
 
 L'ultimo comando deve rispondere che il file è valido. Se non lo è, non continuare: elimina il file con `sudo rm /etc/sudoers.d/rewear-github-actions` e correggi il comando.
 
-## 3. Chiave SSH riservata a GitHub Actions
+## 4. Chiave SSH riservata a GitHub Actions
 
 Sempre sulla VPS, crea una nuova chiave dedicata. Non inviare mai la chiave privata in chat né committarla nel repository.
 
@@ -97,7 +122,7 @@ Verifica che l'impronta sia quella del tuo server prima di salvarla. Dalla VPS p
 sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
 ```
 
-## 4. Repository secrets GitHub
+## 5. Repository secrets GitHub
 
 Apri `https://github.com/AlcNot/ReWear/settings/secrets/actions`, seleziona **New repository secret** e crea esattamente questi quattro secrets:
 
@@ -110,7 +135,7 @@ Apri `https://github.com/AlcNot/ReWear/settings/secrets/actions`, seleziona **Ne
 
 Le secrets non possono essere lette nuovamente da GitHub: se incolli un valore errato, sostituiscilo con **Update secret**.
 
-## 5. Primo deploy e deploy successivi
+## 6. Primo deploy e deploy successivi
 
 Dopo avere creato le quattro secrets, apri `https://github.com/AlcNot/ReWear/actions/workflows/deploy.yml`, seleziona **Run workflow** e avvialo sulla branch `main`. Controlla che i job `Type-check and build` e `Deploy to production VPS` siano verdi.
 
@@ -121,10 +146,4 @@ ssh ubuntu@51.255.167.28 'sudo systemctl status rewear --no-pager'
 ssh ubuntu@51.255.167.28 'journalctl -u rewear -n 100 --no-pager'
 ```
 
-Dal PC continua a usare il tunnel per visitare il sito senza esporre la porta 3000 su Internet:
-
-```bash
-ssh -N -L 3000:127.0.0.1:3000 ubuntu@51.255.167.28
-```
-
-Poi apri `http://localhost:3000`. La finestra del tunnel rimane apparentemente senza output: è il comportamento normale. Se il browser non risponde e il tunnel stampa `Connection refused`, controlla prima `sudo systemctl status rewear --no-pager` sulla VPS.
+Apri `http://51.255.167.28` per verificare la pubblicazione. Dopo aver creato un record DNS `A` per il dominio verso l'IP della VPS, il sito sarà disponibile anche dal dominio. Per HTTPS è necessario configurare in seguito un reverse proxy con certificato TLS.

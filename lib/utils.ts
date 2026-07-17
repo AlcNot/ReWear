@@ -15,7 +15,7 @@ export function formatPrice(priceCents: number, currency = 'EUR', locale = 'it-I
 
 export function getInitials(value: string | null | undefined) {
   if (!value) {
-    return 'RW';
+    return 'WW';
   }
 
   return value

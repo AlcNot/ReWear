@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 36 33% 98%;
-    --foreground: 24 15% 14%;
+    --background: 36 56% 97%;
+    --foreground: 238 37% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 24 15% 14%;
-    --primary: 157 47% 31%;
+    --card-foreground: 238 37% 16%;
+    --primary: 10 77% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 36 34% 92%;
-    --secondary-foreground: 24 15% 14%;
-    --muted: 36 23% 94%;
-    --muted-foreground: 24 8% 43%;
-    --accent: 36 35% 91%;
-    --accent-foreground: 24 15% 14%;
+    --secondary: 45 91% 91%;
+    --secondary-foreground: 238 37% 16%;
+    --muted: 36 29% 92%;
+    --muted-foreground: 239 12% 42%;
+    --accent: 43 78% 91%;
+    --accent-foreground: 238 37% 16%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 32 21% 86%;
-    --input: 32 21% 86%;
-    --ring: 157 47% 31%;
-    --radius: 0.75rem;
+    --border: 34 19% 84%;
+    --input: 34 19% 84%;
+    --ring: 10 77% 48%;
+    --radius: 1rem;
   }
 
   * { @apply border-border; }
@@ -35,4 +35,5 @@
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
 }

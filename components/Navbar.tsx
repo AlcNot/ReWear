@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
-import { Bell, Heart, LogOut, Menu, MessageCircle, Search, Shirt, UserRound, X } from 'lucide-react';
+import { ArrowUpRight, Bell, Heart, LogOut, Menu, MessageCircle, Search, Sparkles, UserRound, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,10 +51,10 @@ export function Navbar({ user }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container flex h-16 items-center gap-3">
-        <Link href="/" className="flex shrink-0 items-center gap-2 text-xl font-extrabold tracking-tight text-foreground" aria-label="ReWear, torna alla home">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground"><Shirt className="h-5 w-5" aria-hidden="true" /></span>
-          <span>ReWear</span>
+      <div className="container flex h-[4.5rem] items-center gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-2 text-xl font-black tracking-[-0.06em] text-foreground" aria-label="Wearware, torna alla home">
+          <span className="grid h-9 w-9 place-items-center rounded-[0.7rem] bg-[#191a37] text-[#f9c845]"><Sparkles className="h-5 w-5" aria-hidden="true" /></span>
+          <span>Wearware</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigazione principale">
@@ -63,7 +63,7 @@ export function Navbar({ user }: NavbarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'rounded-full px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
+                'rounded-full px-3 py-2 text-sm font-bold transition-colors hover:bg-accent',
                 pathname === item.href ? 'bg-accent text-foreground' : 'text-muted-foreground'
               )}
             >
@@ -75,7 +75,7 @@ export function Navbar({ user }: NavbarProps) {
         <form onSubmit={handleSearch} className="relative ml-auto hidden max-w-md flex-1 md:block" role="search">
           <label htmlFor="site-search" className="sr-only">Cerca capi, brand o taglie</label>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <Input id="site-search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Cerca capi, brand, taglie..." className="h-10 rounded-full bg-muted pl-9 pr-3" />
+          <Input id="site-search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Cerca capi, brand, taglie..." className="h-10 rounded-full border-transparent bg-muted pl-9 pr-3 focus-visible:border-primary" />
         </form>
 
         <div className="ml-auto hidden items-center gap-1 md:flex lg:ml-0">
@@ -92,7 +92,7 @@ export function Navbar({ user }: NavbarProps) {
           ) : (
             <>
               <Button variant="ghost" asChild><Link href="/login">Accedi</Link></Button>
-              <Button asChild><Link href="/signup">Registrati</Link></Button>
+              <Button asChild><Link href="/signup" className="gap-1.5">Inizia ora <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></Link></Button>
             </>
           )}
         </div>

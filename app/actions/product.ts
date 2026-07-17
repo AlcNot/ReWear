@@ -9,7 +9,7 @@ import type { Product, ProductCondition } from '@/types/database';
 const allowedShippingOptions = ['standard', 'express', 'pickup'] as const;
 const allowedConditions = ['new_with_tags', 'new_without_tags', 'very_good', 'good', 'satisfactory'] as const;
 
-function isReWearStorageUrl(value: string) {
+function isWearwareStorageUrl(value: string) {
   try {
     const url = new URL(value);
     const configuredSupabaseUrl = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!);
@@ -29,7 +29,7 @@ export const createProductSchema = z.object({
   color: z.string().trim().max(50, 'Il colore è troppo lungo.').optional().or(z.literal('')),
   condition: z.enum(allowedConditions),
   shippingOptions: z.array(z.enum(allowedShippingOptions)).min(1, 'Scegli almeno un metodo di spedizione.'),
-  images: z.array(z.string().url('Ogni immagine deve avere un URL valido.').refine(isReWearStorageUrl, 'Le immagini devono provenire dal bucket ReWear.')).min(1, 'Carica almeno un’immagine.').max(8, 'Puoi caricare al massimo 8 immagini.')
+  images: z.array(z.string().url('Ogni immagine deve avere un URL valido.').refine(isWearwareStorageUrl, 'Le immagini devono provenire dal bucket Wearware.')).min(1, 'Carica almeno un’immagine.').max(8, 'Puoi caricare al massimo 8 immagini.')
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

@@ -11,7 +11,7 @@ export default async function SellPage() {
 
   return (
     <div className="container max-w-3xl py-10 sm:py-14">
-      <div className="mb-8"><p className="text-sm font-semibold text-primary">Vendi su ReWear</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Pubblica il tuo articolo</h1><p className="mt-3 text-muted-foreground">Inserisci informazioni accurate per aiutare gli acquirenti a scegliere con fiducia.</p></div>
+      <div className="mb-8"><p className="text-sm font-semibold text-primary">Vendi su Wearware</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Pubblica il tuo articolo</h1><p className="mt-3 text-muted-foreground">Inserisci informazioni accurate per aiutare gli acquirenti a scegliere con fiducia.</p></div>
       <SellProductForm categories={(categories ?? []) as Category[]} />
     </div>
   );

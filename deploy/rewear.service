@@ -1,5 +1,5 @@
 [Unit]
-Description=ReWear Next.js application
+Description=Wearware Next.js application
 Wants=network-online.target
 After=network-online.target
 
