@@ -4,7 +4,29 @@ Questo progetto viene pubblicato dalla branch `main` del repository GitHub `AlcN
 
 La pipeline non trasferisce e non sovrascrive `.env.local`, `node_modules`, `.next` o `.git`. Le variabili segrete rimangono quindi solo sulla VPS e la build di produzione usa il suo `.env.local`.
 
-## 1. Preparazione una sola volta sulla VPS
+## 1. Prima sincronizzazione del codice sulla VPS
+
+Se la cartella `~/ReWear` sulla VPS e' stata creata con `scp` o `tar` e non e' un clone Git, preserva la copia attuale in un backup e clona il repository. Il comando conserva `.env.local` se esiste.
+
+```bash
+cd ~
+backup_dir="ReWear-backup-$(date +%Y%m%d-%H%M%S)"
+mv ReWear "$backup_dir"
+git clone https://github.com/AlcNot/ReWear.git ReWear
+if [ -f "$backup_dir/.env.local" ]; then cp "$backup_dir/.env.local" ReWear/.env.local; fi
+cd ~/ReWear
+```
+
+Se invece `~/ReWear` e' gia' un clone del repository, basta aggiornare la branch principale:
+
+```bash
+cd ~/ReWear
+git pull --ff-only origin main
+```
+
+Il backup non viene cancellato. Dopo avere verificato che il sito funziona, potrai eventualmente rimuoverlo manualmente.
+
+## 2. Preparazione una sola volta sulla VPS
 
 Connettiti alla VPS:
 
@@ -49,7 +71,7 @@ sudo visudo -cf /etc/sudoers.d/rewear-github-actions
 
 L'ultimo comando deve rispondere che il file è valido. Se non lo è, non continuare: elimina il file con `sudo rm /etc/sudoers.d/rewear-github-actions` e correggi il comando.
 
-## 2. Chiave SSH riservata a GitHub Actions
+## 3. Chiave SSH riservata a GitHub Actions
 
 Sempre sulla VPS, crea una nuova chiave dedicata. Non inviare mai la chiave privata in chat né committarla nel repository.
 
@@ -75,7 +97,7 @@ Verifica che l'impronta sia quella del tuo server prima di salvarla. Dalla VPS p
 sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
 ```
 
-## 3. Repository secrets GitHub
+## 4. Repository secrets GitHub
 
 Apri `https://github.com/AlcNot/ReWear/settings/secrets/actions`, seleziona **New repository secret** e crea esattamente questi quattro secrets:
 
@@ -88,7 +110,7 @@ Apri `https://github.com/AlcNot/ReWear/settings/secrets/actions`, seleziona **Ne
 
 Le secrets non possono essere lette nuovamente da GitHub: se incolli un valore errato, sostituiscilo con **Update secret**.
 
-## 4. Primo deploy e deploy successivi
+## 5. Primo deploy e deploy successivi
 
 Dopo avere creato le quattro secrets, apri `https://github.com/AlcNot/ReWear/actions/workflows/deploy.yml`, seleziona **Run workflow** e avvialo sulla branch `main`. Controlla che i job `Type-check and build` e `Deploy to production VPS` siano verdi.
 
