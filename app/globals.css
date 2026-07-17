@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 33% 98%;
+    --foreground: 24 15% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 24 15% 14%;
+    --primary: 157 47% 31%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 36 34% 92%;
+    --secondary-foreground: 24 15% 14%;
+    --muted: 36 23% 94%;
+    --muted-foreground: 24 8% 43%;
+    --accent: 36 35% 91%;
+    --accent-foreground: 24 15% 14%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 21% 86%;
+    --input: 32 21% 86%;
+    --ring: 157 47% 31%;
+    --radius: 0.75rem;
+  }
+
+  * { @apply border-border; }
+
+  html { @apply scroll-smooth; }
+
+  body { @apply min-h-screen bg-background font-sans text-foreground antialiased; }
+
+  button, input, select, textarea { font: inherit; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}

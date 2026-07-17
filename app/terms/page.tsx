@@ -1,0 +1,5 @@
+export const metadata = { title: 'Termini di utilizzo' };
+
+export default function TermsPage() {
+  return <div className="container max-w-3xl py-12 sm:py-16"><article className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"><h1 className="text-3xl font-extrabold tracking-tight">Termini di utilizzo</h1><div className="mt-6 space-y-5 text-sm leading-7 text-muted-foreground"><p>ReWear è un marketplace peer-to-peer: ogni venditore è responsabile dell’accuratezza dell’annuncio, della disponibilità dell’articolo e della spedizione. Ogni acquirente è responsabile della verifica delle informazioni prima del pagamento.</p><p>Non sono consentiti articoli contraffatti, pericolosi, illegali o in violazione dei diritti di terzi. Gli utenti devono usare la piattaforma nel rispetto delle leggi applicabili e delle istruzioni di pagamento.</p><p>Questa pagina è un punto di partenza tecnico per il prodotto. Prima del lancio pubblico, fai revisionare termini, privacy policy, rimborsi e trattamento dei dati da un professionista legale nella giurisdizione di riferimento.</p></div></article></div>;
+}
